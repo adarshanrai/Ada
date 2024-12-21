@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("https://i.pinimg.com/originals/73/38/41/733841b21504cb53101e99b2f355c376.gif"); 
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; 
+        }
+        .gallery {
+            padding: 2rem;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 0.1)
+            );
+            margin: 2rem auto;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #222;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .images {
+            display: flex;
+            justify-content: space-between; 
+            gap: 1rem; 
+            margin: 1.5rem 0;
+        }
+        .images img {
+            flex: 1; 
+            max-width: 30%;
+            height: auto;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .images img:hover {
+            transform: scale(1.1); 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        .description {
+            margin-top: 1.5rem;
+            font-size: 1.3rem;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .h2 {
+            font-size: 1.2em;
+            color: #333;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <h1>Chatang</h1>
+        <h2>Home is where love resides, memories are created, friends always belong, and laughter never ends. - Unknown</h2>
+        <div class="images">
+            <img src="WHATSaap/sunset.jpg" alt="Sunset View">
+            <img src="WHATSaap/valley.jpg" alt="Hills View">
+            <img src="WHATSaap/village.jpg" alt="Village View">
+        </div>
+        <div class="description">
+            <p>Nestled among rolling hills with paddy fields, the settlement radiates quiet charm. Towering mountains stand in the distance, with Kanchenjunga occasionally gracing the horizon. A serene haven where nature and life blend in perfect harmony.</p>
+        </div>
+    </div>
+</body>
+</html>
