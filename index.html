@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Percentage Checker</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url("https://i.pinimg.com/originals/4f/91/ad/4f91ad01c3636ce41db8b48e12005e97.gif");
+            background-repeat: no-repeat;
+            background-size: cover;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        /* Container Styles */
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading Styles */
+        h1 {
+            color: #0056b3;
+            margin-bottom: 20px;
+            font-size: 28px;
+            
+            font-weight: 600;
+        }
+
+        /* Input Styles */
+        input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #0056b3;
+        }
+
+        /* Button Styles */
+        button {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background: #cc5200;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Result Styles */
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #0056b3;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f0f8ff;
+            border: 2px solid #0056b3;
+        }
+
+        /* Feedback Styles */
+        .feedback {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Error Message Styles */
+        .error {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 22px;
+            }
+            input {
+                padding: 10px;
+                font-size: 14px;
+            }
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            .result {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Attendance Percentage Checker</h1>
+        <input type="number" id="totalClasses" placeholder="Enter Total Classes" min="1">
+        <input type="number" id="attendedClasses" placeholder="Enter Attended Classes" min="0">
+        <button onclick="calculateAttendance()">Check Attendance</button>
+        <div class="result" id="attendanceResult"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="error" id="errorMessage"></div>
+    </div>
+<script>
+function calculateAttendance() {
+    let total = document.getElementById('totalClasses').value;
+    let attended = document.getElementById('attendedClasses').value;
+    let resultDiv = document.getElementById('attendanceResult');
+    let feedbackDiv = document.getElementById('feedback');
+    let errorDiv = document.getElementById('errorMessage');
+
+    
+    resultDiv.innerText = '';
+    feedbackDiv.innerText = '';
+    errorDiv.innerText = '';
+
+    if (total > 0 && attended >= 0 && attended <= total) {
+        let percentage = (attended / total) * 100;
+        resultDiv.innerText = `Your Attendance Percentage: ${percentage.toFixed(1)}%`;
+
+       
+        if (percentage >= 75) {
+            feedbackDiv.innerText = 'Great! You have good attendance.';
+        } else if (percentage >= 50) {
+            feedbackDiv.innerText = 'You need to improve your attendance.';
+        } else {
+            feedbackDiv.innerText = 'Warning! Your attendance is very low.';
+        }
+    } else {
+        errorDiv.innerText = 'Please enter valid numbers.';
+    }
+}
+
+</script>
+</body
