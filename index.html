@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="idex.css">
+    <title>Attendance Percentage Checker</title>
+       
+        
+</head>
+<body>
+    
+    <header>
+       
+        <div class="logo">
+            <img src="pics/prpfole.jpg" alt="Left Logo">
+        </div>
+
+       
+        <h1>Medhavi Skills University</h1>
+       
+
+       
+        <div class="logo">
+            <img src="pics/msy.png" alt="Right Logo">
+        </div>
+    </header>
+
+    
+    <main>
+        <div class="container">
+            <h1>Attendance Percentage Checker</h1>
+            <input type="number" id="totalClasses" placeholder="Enter Total Classes" min="1">
+            <input type="number" id="attendedClasses" placeholder="Enter Attended Classes" min="0">
+            <button onclick="calculateAttendance()">Check Attendance</button>
+            <div class="result" id="attendanceResult"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="error" id="errorMessage"></div>
+        </div>
+    </main>
+
+    
+    <footer>
+        <h2>Skill • Empower • Liberate</h2>
+    </footer>
+
+    <script>
+        function calculateAttendance() {
+            let total = parseFloat(document.getElementById('totalClasses').value);
+            let attended = parseFloat(document.getElementById('attendedClasses').value);
+            let resultDiv = document.getElementById('attendanceResult');
+            let feedbackDiv = document.getElementById('feedback');
+            let errorDiv = document.getElementById('errorMessage');
+
+            // Clear previous results
+            resultDiv.innerText = '';
+            feedbackDiv.innerText = '';
+            errorDiv.innerText = '';
+
+           
+            if (total > 0 && attended >= 0 && attended <= total) {
+                // Calculate current attendance percentage
+                let percentage = (attended / total) * 100;
+                resultDiv.innerText = `Your Attendance Percentage: ${percentage.toFixed(2)}%`;
+
+                if (percentage >= 75) {
+                    feedbackDiv.innerText = 'Great! You have good attendance.';
+                } else if (percentage >= 50) {
+                    feedbackDiv.innerText = 'You need to improve your attendance.';
+                } else {
+                    feedbackDiv.innerText = 'Warning! Your attendance is very low.';
+                }
+
+               
+                if (percentage < 75) {
+                    let requiredClasses = Math.ceil((0.75 * total - attended) / (1 - 0.75));
+                    resultDiv.innerText += `\nYou need to attend ${requiredClasses} more classes to reach 75% attendance.`;
+                }
+            } else {
+                errorDiv.innerText = 'Please enter valid numbers.';
+            }
+        }
+    </script>
+</body>
+</html>
