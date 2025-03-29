@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ada - Your AI Assistant</title>
+    <style>
+        :root {
+            --primary-color: #ffb7c5; 
+            --secondary-color: #ff8fab;
+            --accent-color: #fb6f92;
+            --background-color: #fff0f3;
+            --user-message-color: #ffe5ec;
+            --bot-message-color: #ffffff;
+            --text-color: #4a4a4a;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --header-text-color: #d23669;
+            --input-bg-color: rgba(255, 255, 255, 0.8);
+            --panel-bg-color: #ffe5ec;
+        }
+
+        /* Dark mode */
+        [data-theme="dark"] {
+            --primary-color: #4a2c6d;
+            --secondary-color: #7e57c2;
+            --accent-color: #b388ff;
+            --background-color: #1a103d;
+            --user-message-color: #2d2252;
+            --bot-message-color: #3a2e5a;
+            --text-color: #e2d9f3;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --header-text-color: #b388ff;
+            --input-bg-color: rgba(58, 46, 90, 0.8);
+            --panel-bg-color: #2d2252;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            z-index: 10;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+            color: var(--header-text-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            line-height: 1.4;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px var(--shadow-color);
+            animation: messageAppear 0.3s ease-out;
+            transform-origin: bottom;
+        }
+
+        @keyframes messageAppear {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--user-message-color);
+            border-bottom-right-radius: 0.2rem;
+            color: var(--text-color);
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--bot-message-color);
+            border-bottom-left-radius: 0.2rem;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            animation: slideInLeft 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            background-color: var(--bot-message-color);
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            border-bottom-left-radius: 0.2rem;
+            display: inline-flex;
+            gap: 0.3rem;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            margin-bottom: 0.5rem;
+            display: none;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .input-container {
+            padding: 1rem;
+            background-color: var(--panel-bg-color);
+            border-top: 1px solid var(--shadow-color);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 2rem;
+            outline: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+        }
+
+        #userInput:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(251, 111, 146, 0.2);
+        }
+
+        #sendButton {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        #sendButton:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        #sendButton:active {
+            transform: scale(0.95);
+        }
+
+        #sendButton i {
+            font-size: 1.2rem;
+        }
+
+        .features-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            z-index: 5;
+            transition: all 0.3s ease;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        .features-button:hover {
+            transform: scale(1.1) rotate(10deg);
+            background-color: var(--secondary-color);
+        }
+
+        .features-panel {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            background-color: var(--panel-bg-color);
+            border-radius: 1rem;
+            padding: 1rem;
+            width: 280px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.2s;
+            z-index: 5;
+            display: none;
+        }
+
+        .features-panel.show {
+            transform: scale(1);
+            display: block;
+            animation: panelAppear 0.3s ease-out;
+        }
+
+        @keyframes panelAppear {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .features-panel h3 {
+            margin-bottom: 0.8rem;
+            color: var(--accent-color);
+            text-align: center;
+        }
+
+        .feature-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(251, 111, 146, 0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-item:hover {
+            background-color: rgba(251, 111, 146, 0.1);
+            transform: translateX(5px);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 5;
+            background-image: url('https://i.pinimg.com/736x/98/41/14/984114ef32b30662c99df033eac71123.jpg');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-color);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        @media (max-width: 600px) {
+            .message {
+                max-width: 90%;
+            }
+            
+            .features-panel {
+                width: 250px;
+            }
+            
+            .header {
+                flex-direction: column;
+                padding: 0.8rem;
+            }
+            
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .features-button {
+                bottom: 70px;
+            }
+            .theme-toggle {
+                bottom: 130px;
+            }
+        }
+
+        /* Special formatting for bot messages */
+        .bot-message ul, .bot-message ol {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .bot-message li {
+            margin-bottom: 0.3rem;
+        }
+
+        .bot-message strong {
+            color: var(--accent-color);
+        }
+
+        .bot-message .emoji {
+            font-size: 1.2em;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(251, 111, 146, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.pinimg.com/736x/58/56/78/5856783ab9f8bb79e7d5416e81f01100.jpg" alt="Ada Logo" class="logo">
+        <div class="header-content">
+            <h1>Ada</h1>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <!-- Messages will appear here -->
+    </div>
+
+    <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your message here..." autocomplete="off">
+        <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+    </div>
+
+    <div class="features-button" id="featuresButton">
+        <i class="fas fa-lightbulb"></i>
+    </div>
+
+    <div class="features-panel" id="featuresPanel">
+        <h3>Quick Actions</h3>
+        <div class="feature-item" onclick="quickAction('Hello!')"><i class="fas fa-hand-wave"></i> Say Hello</div>
+        <div class="feature-item" onclick="quickAction('What can you do?')"><i class="fas fa-list"></i> Show Features</div>
+        <div class="feature-item" onclick="quickAction('Generate a password')"><i class="fas fa-key"></i> Generate Password</div>
+        <div class="feature-item" onclick="quickAction('What\'s the time?')"><i class="fas fa-clock"></i> Current Time</div>
+        <div class="feature-item" onclick="quickAction('Convert 5 feet to cm')"><i class="fas fa-ruler-combined"></i> Unit Conversion</div>
+        <div class="feature-item" onclick="quickAction('Tell me a joke')"><i class="fas fa-laugh-squint"></i> Tell a Joke</div>
+    </div>
+
+    <div class="theme-toggle" id="themeToggle"></div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+        // Apply the saved theme
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Add a quick animation
+            themeToggle.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                themeToggle.style.transform = 'scale(1)';
+            }, 200);
+
+            function updateThemeIcon(theme) {
+    if (theme === 'light-theme') {
+        themeIcon.src = "image/image/0e1959a4506ba8a95236475e7f7a547e.jpg"; // Path to your sun icon
+        themeIcon.alt = "Light Mode";
+    } else {
+        themeIcon.src = "image/image/984114ef32b30662c99df033eac71123.jpg"; // Path to your moon icon
+        themeIcon.alt = "Dark Mode";
+    }
+}
+        });
+
+        // Your existing JavaScript code (all the functions) remains exactly the same
+        const responses = {
+            greetings: ["Hello there! 👋", "Hi! How can I assist you today?", "Hey! What can I do for you?"],
+            farewells: ["Goodbye! Have a wonderful day!", "See you later! 👋", "Bye! Come chat again soon!"],
+            thanks: ["You're welcome! 😊", "No problem!", "Happy to help!"],
+            features: [
+                "I can help with: \n- Voting eligibility\n- Attendance tracking\n- Math calculations\n- Time/date\n- Unit conversions\n- Password generation\n- Todo lists\n- Weather lookup (simulated)\n- Currency conversion\n- Age calculator",
+                "Try asking about:\n- 'Convert 5 feet to cm'\n- 'Generate a password'\n- 'Add buy milk to my todo list'\n- 'What's the weather?'\n- 'Convert $100 to EUR'",
+                "Need help with:\n- Calculations\n- Conversions\n- Organization\n- Or just want to chat?"
+            ],
+            error: "I didn't understand that. Try asking about one of my features or say 'help' to see what I can do.",
+            featuresList: "I can help with the following features:\n{features}"
+        };
+
+        const userData = {
+            todos: [],
+            reminders: []
+        };
+
+        // DOM elements
+        const chatContainer = document.getElementById('chatContainer');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const featuresButton = document.getElementById('featuresButton');
+        const featuresPanel = document.getElementById('featuresPanel');
+
+        // Initialize chat
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                addMessage("🌟 Hello! I'm Ada. I can help with:\n\n" +
+                           "• Practical tools (calculators, converters)\n" +
+                           "• Organization (todos, reminders)\n" +
+                           "• Fun content (jokes, quotes)\n" +
+                           "• And much more!\n\n", false);
+            }, 1000);
+        });
+
+        // Event listeners
+        sendButton.addEventListener('click', processInput);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processInput();
+            }
+        });
+
+        featuresButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            featuresPanel.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!featuresPanel.contains(e.target) && e.target !== featuresButton) {
+                featuresPanel.classList.remove('show');
+            }
+        });
+
+        function quickAction(text) {
+            userInput.value = text;
+            processInput();
+            featuresPanel.classList.remove('show');
+        }
+
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+            
+            const formattedText = text.replace(/\n/g, '<br>')
+                                      .replace(/\•/g, '•')
+                                      .replace(/\d+\.\s/g, '<br>$&');
+            
+            messageDiv.innerHTML = formattedText;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.classList.add('message-time');
+            const now = new Date();
+            timeDiv.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            messageDiv.appendChild(timeDiv);
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            messageDiv.style.animation = isUser ? 'slideInRight 0.3s ease-out' : 'slideInLeft 0.3s ease-out';
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'inline-flex';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function processInput() {
+            const inputText = userInput.value.trim();
+            if (inputText === '') return;
+            
+            addMessage(inputText, true);
+            userInput.value = '';
+            showTypingIndicator();
+            
+            sendButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                sendButton.style.transform = 'scale(1)';
+            }, 100);
+            
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = handleFeatures(inputText);
+                setTimeout(() => addMessage(response, false), 300);
+            }, 800);
+        }
+
+        function handleFeatures(input) {
+            const lowerInput = input.toLowerCase().trim();
+
+
+            if (/(remind me|set a reminder|alert me|notify me|remember)/i.test(lowerInput) && 
+                /(at|on|in|about|for)/i.test(lowerInput)) {
+                return setReminder(input);
+            }
+
+            // Help/Features
+            if (/help|what can you do|features|capabilities|assistance|support/i.test(lowerInput)) {
+                return randomResponse(responses.features);
+            }
+
+            // Greetings
+            if (/^(hi|hello|hey|greetings|sup|what's up)\b/i.test(lowerInput)) {
+                return randomResponse(responses.greetings);
+            }
+
+            // Farewells
+            if (/^(bye|goodbye|see ya|see you|later|cya|farewell)\b/i.test(lowerInput)) {
+                return randomResponse(responses.farewells);
+            }
+
+            // Thanks
+            if (/^(thanks|thank you|thx|appreciate|grateful)\b/i.test(lowerInput)) {
+                return randomResponse(responses.thanks);
+            }
+
+            if (/(convert|change|transformation|translate|switch)/i.test(lowerInput) && 
+                /(unit|measurement|length|weight|temperature|distance)/i.test(lowerInput) || 
+                /\d+\s?(feet|cm|inches|meters?|m|miles|km|pounds|kg|fahrenheit|celsius)/i.test(lowerInput)) {
+                return handleUnitConversion(input);
+            }
+            
+           
+
+            if (/(\bI am|\bI'm||\bIm\bage is|\byears|\bturn|\baged|\bage of|\baged) (\d+|in \d{4})/i.test(lowerInput)) {
+                return checkVotingEligibility(input);
+            }
+
+            // Attendance Tracking
+            if (/attendance|classes attended|lectures attended|present/i.test(lowerInput) || 
+                /\d+\s?(out of|from|of)\s?\d+\s?(classes?|lectures?)/i.test(lowerInput) ||
+                /\d+\s?\/\s?\d+/i.test(lowerInput)) {
+                return calculateAttendance(input);
+            } 
+
+            // Math Calculations
+            if (/(calculate|compute|solve|math|equation|formula|add|subtract|multiply|divide)/i.test(lowerInput) && 
+                /[\d\s+\-*\/^%.()]+/i.test(lowerInput)) {
+                return doMathCalculation(input);
+            }
+
+            // Time/Date
+            if (/what('?s| is) the (time|current time|clock|hour|time|Time)/i.test(lowerInput) || 
+                /time now|current time|what time is it/i.test(lowerInput)) {
+                return `The current time is: ${new Date().toLocaleTimeString()}`;
+            }
+            if (/what('?s| is) (today'?s|the) date|current date|today's date|date today|todays date/i.test(lowerInput)) {
+                return `Today's date is: ${new Date().toLocaleDateString()}`;
+            }
+
+            // Password Generation
+            if (/(generate me a password|create|make|get).*(password|passcode|key|secret code)/i.test(lowerInput) || 
+                /password|secure code|random string/i.test(lowerInput)) {
+                return generatePassword();
+            }
+
+            // Todo List
+            if (/(add|create|new|insert|include).*(todo|task|item|reminder|note)/i.test(lowerInput) || 
+                /todo list|task list|things to do|reminders/i.test(lowerInput)) {
+                return handleTodos(input);
+            }
+
+            // Weather
+            if (/what'?s the weather|weather (in|for|at|today)|forecast|temperature|how is the weather|what is todays weather/i.test(lowerInput)) {
+                return simulateWeather(input);
+            }
+
+            // Currency Conversion
+            if (/(convert|exchange|change|transfer).*(currency|money|cash)/i.test(lowerInput) || 
+                /\d+\s?(dollars|usd|eur|euros|pounds|gbp|yen|jpy|rupees|inr)/i.test(lowerInput)) {
+                return simulateCurrencyConversion(input);
+            }
+
+            // Reminders
+           
+
+            // Jokes
+            if (/(tell|say|share|give me).*(joke|funny|humor|laugh|Tell me a)/i.test(lowerInput) || 
+                /make me laugh|cheer me up|another|lighten up/i.test(lowerInput)) {
+                return tellJoke();
+            }
+
+            // Quotes
+            if (/(give|tell|inspire|motivate|share).*(quote|saying|proverb|wisdom)/i.test(lowerInput) || 
+                /motivate me|inspiration|wise words/i.test(lowerInput)) {
+                return giveQuote();
+            }
+
+            // Features List
+            if (/what (can you do|are your features)|list features|show commands|capabilities|options/i.test(lowerInput)) {
+                return listAllFeatures();
+            }
+
+            return responses.error;
+        }
+
+       
+        function calculateAttendance(input) {
+            const lowerInput = input.toLowerCase().trim();
+            
+            if (lowerInput === 'attendance') {
+                return "Please provide your attendance details like:\n" +
+                       "- 'I attended 50 out of 80 classes'\n" +
+                       "- '45/60 attendance'\n" +
+                       "- 'attended 30 from 40 lectures'";
+            }
+
+            const pattern1 = input.match(/(\d+)\s*(?:out of|from|attended|of)\s*(\d+)\s*(?:classes?|lectures?|sessions?)/i);
+            const pattern2 = input.match(/attended\s*(\d+)\s*\/\s*(\d+)/i);
+            const pattern3 = input.match(/(\d+)\s*\/\s*(\d+)\s*(?:attendance|classes?)/i);
+            
+            const match = pattern1 || pattern2 || pattern3;
+            
+            if (match) {
+                const attended = parseInt(match[1]);
+                const total = parseInt(match[2]);
+                
+                if (total === 0) return "Total classes can't be zero!";
+                if (attended > total) return "You can't attend more classes than the total!";
+                
+                const percentage = Math.round((attended / total) * 100);
+                
+                if (percentage >= 75) {
+                    return `✅ Your attendance is ${percentage}% (${attended}/${total}) which meets the 75% requirement. 👍`;
+                } else {
+                    const neededFor75 = Math.ceil(0.75 * total - attended);
+                    const remainingClasses = total - attended;
+                    let suggestion = "";
+                    
+                    if (neededFor75 <= 0) {
+                        suggestion = "You've already met the requirement!";
+                    } else if (neededFor75 > remainingClasses) {
+                        suggestion = "⚠️ You can't reach 75% with the remaining classes.";
+                    } else {
+                        suggestion = `You need to attend ${neededFor75} more ${neededFor75 === 1 ? 'class' : 'classes'} to reach 75%.`;
+                    }
+                    
+                    return `❌ Your attendance is ${percentage}% (${attended}/${total}) which doesn't meet the 75% requirement.\n${suggestion}`;
+                }
+            }
+            
+            return "I couldn't calculate your attendance. Please try formats like:\n" +
+                   "- '45/60 attendance'\n" +
+                   "- 'attended 30 of 40 classes'";
+        }
+
+        function doMathCalculation(input) {
+            try {
+                const mathExpr = input.replace(/[^\d+\-*\/^%.()]/g, '');
+                if (!mathExpr) return "I couldn't find a math expression to calculate.";
+                const expr = mathExpr.replace(/\^/g, '**');
+                const result = new Function(`return ${expr}`)();
+                return `${mathExpr} = ${result}`;
+            } catch (e) {
+                return "Sorry, I couldn't calculate that. Try something like 'calculate 15 + 27'";
+            }
+        }
+
+        function handleUnitConversion(input) {
+            const conversions = {
+                length: {
+                    feet: 0.3048,
+                    cm: 0.01,
+                    inches: 0.0254,
+                    meters: 1,
+                    miles: 1609.34,
+                    km: 1000
+                },
+                weight: {
+                    pounds: 0.453592,
+                    kg: 1,
+                    ounces: 0.0283495
+                },
+                temperature: {
+                    celsius: {
+                        convert: (val) => val,
+                        toFahrenheit: (val) => (val * 9/5) + 32
+                    },
+                    fahrenheit: {
+                        convert: (val) => (val - 32) * 5/9,
+                        toCelsius: (val) => val
+                    }
+                }
+            };
+
+            const match = input.match(/(\d+)\s?(\w+)\s?(?:to|in)\s?(\w+)/i);
+            if (match) {
+                const value = parseFloat(match[1]);
+                const fromUnit = match[2].toLowerCase();
+                const toUnit = match[3].toLowerCase();
+
+                if (['celsius', 'fahrenheit'].includes(fromUnit) && ['celsius', 'fahrenheit'].includes(toUnit)) {
+                    if (fromUnit === toUnit) return `${value}°${fromUnit[0].toUpperCase()} is the same!`;
+                    const converted = conversions.temperature[fromUnit].toFahrenheit(value);
+                    return `${value}°${fromUnit[0].toUpperCase()} = ${converted.toFixed(1)}°${toUnit[0].toUpperCase()}`;
+                }
+
+                for (const type of ['length', 'weight']) {
+                    if (conversions[type][fromUnit] && conversions[type][toUnit]) {
+                        const meters = value * conversions[type][fromUnit];
+                        const converted = meters / conversions[type][toUnit];
+                        return `${value} ${fromUnit} = ${converted.toFixed(2)} ${toUnit}`;
+                    }
+                }
+            }
+            return "I couldn't convert that. Try something like 'convert 5 feet to cm' or '10 pounds to kg'";
+        }
+
+        function generatePassword() {
+            const length = 12;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            return `Generated password: ${password}\n(Remember to use strong, unique passwords!)`;
+        }
+
+        function handleTodos(input) {
+            if (/add|create|new/i.test(input)) {
+                const task = input.replace(/.*(add|create|new)\s*(todo|task|item)?\s*/i, '');
+                if (task.trim()) {
+                    userData.todos.push(task);
+                    return `Added to your todo list: "${task}"\n\nCurrent todos:\n${formatTodos()}`;
+                }
+            }
+            else if (/show|list|view/i.test(input)) {
+                if (userData.todos.length === 0) return "Your todo list is empty!";
+                return `Your todo list:\n${formatTodos()}`;
+            }
+            else if (/clear|remove all/i.test(input)) {
+                userData.todos = [];
+                return "Your todo list has been cleared!";
+            }
+            else if (/complete|done|remove/i.test(input)) {
+                const numMatch = input.match(/\d+/);
+                if (numMatch && userData.todos.length > 0) {
+                    const index = parseInt(numMatch[0]) - 1;
+                    if (index >= 0 && index < userData.todos.length) {
+                        const completed = userData.todos.splice(index, 1)[0];
+                        return `Completed: "${completed}"\n\nRemaining todos:\n${formatTodos()}`;
+                    }
+                }
+            }
+            
+            return "Try: 'add buy milk to my todo list' or 'show my todos' or 'complete todo 1'";
+        }
+
+        function formatTodos() {
+            return userData.todos.map((todo, i) => `${i + 1}. ${todo}`).join('\n');
+        }
+
+        function simulateWeather(input) {
+            const locations = {
+                "new york": "🌤️ 72°F (22°C), partly cloudy",
+                "london": "🌧️ 58°F (14°C), light rain",
+                "tokyo": "☀️ 82°F (28°C), sunny",
+                "paris": "⛅ 68°F (20°C), partly sunny",
+                "default": "☀️ 75°F (24°C), sunny and pleasant"
+            };
+            
+            const location = Object.keys(locations).find(loc => 
+                input.toLowerCase().includes(loc)
+            ) || "default";
+            
+            return `Weather in ${location === "default" ? "your area" : location}: ${locations[location]}`;
+        }
+
+        function simulateCurrencyConversion(input) {
+            const rates = {
+                usd: { eur: 0.85, gbp: 0.73, jpy: 110.5 },
+                eur: { usd: 1.18, gbp: 0.86, jpy: 130.2 },
+                gbp: { usd: 1.37, eur: 1.16, jpy: 151.8 },
+                jpy: { usd: 0.0091, eur: 0.0077, gbp: 0.0066 }
+            };
+
+            const pattern1 = input.match(/(\d+)\s?(usd|dollars?|eur|euros?|gbp|pounds?|jpy|yen)\s?(?:to|in)\s?(usd|dollars?|eur|euros?|gbp|pounds?|jpy|yen)/i);
+            const pattern2 = input.match(/(?:convert|change)\s(\d+)\s?(usd|dollars?|eur|euros?|gbp|pounds?|jpy|yen)\s?(?:to|into)\s?(usd|dollars?|eur|euros?|gbp|pounds?|jpy|yen)/i);
+            const pattern3 = input.match(/\$(\d+)\s?(?:to|in)\s?(?:€|£|¥)/i);
+            
+            const match = pattern1 || pattern2 || pattern3;
+            
+            if (match) {
+                const amount = parseFloat(match[1]);
+                const fromCur = match[2] ? match[2].toLowerCase() : '';
+                const toCur = match[3] ? match[3].toLowerCase() : '';
+                
+                const fromCode = 
+                    fromCur.includes('usd') || fromCur.includes('dollar') ? 'usd' :
+                    fromCur.includes('eur') || fromCur.includes('euro') ? 'eur' :
+                    fromCur.includes('gbp') || fromCur.includes('pound') ? 'gbp' :
+                    fromCur.includes('jpy') || fromCur.includes('yen') ? 'jpy' : '';
+                
+                const toCode = 
+                    toCur.includes('usd') || toCur.includes('dollar') ? 'usd' :
+                    toCur.includes('eur') || toCur.includes('euro') ? 'eur' :
+                    toCur.includes('gbp') || toCur.includes('pound') ? 'gbp' :
+                    toCur.includes('jpy') || toCur.includes('yen') ? 'jpy' : '';
+
+                if (fromCode && toCode && rates[fromCode] && rates[fromCode][toCode]) {
+                    const converted = (amount * rates[fromCode][toCode]).toFixed(2);
+                    const currencySymbols = {
+                        usd: '$',
+                        eur: '€',
+                        gbp: '£',
+                        jpy: '¥'
+                    };
+                    return `${currencySymbols[fromCode] || fromCode.toUpperCase()}${amount} = ${currencySymbols[toCode] || toCode.toUpperCase()}${converted}`;
+                }
+            }
+            
+            return "Please specify conversion like:\n" +
+                   "- '100 USD to EUR'\n" +
+                   "- 'convert 50 pounds to dollars'\n" +
+                   "- '¥5000 to euros'";
+        }
+        
+       // Initialize storage if not exists
+if (!window.userData) {
+    window.userData = {
+        reminders: [],
+        lastChecked: 0
+    };
+}
+
+// Main reminder function
+function setReminder(input) {
+    // Normalize input
+    const cleanInput = input.toLowerCase().trim();
+    
+    // Parse input
+    const match = cleanInput.match(/remind me to (.+?) at (\d{1,2}):(\d{2})(am|pm)/);
+    if (!match) return "Please use: 'remind me to [task] at [time]am/pm'";
+    
+    // Extract components
+    const task = match[1].trim();
+    let hours = parseInt(match[2]);
+    const minutes = parseInt(match[3]);
+    const period = match[4];
+    
+    // Convert to 24-hour time
+    if (period === 'pm' && hours < 12) hours += 12;
+    if (period === 'am' && hours === 12) hours = 0;
+    
+    // Create reminder time (today or tomorrow)
+    const now = new Date();
+    const reminderTime = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hours,
+        minutes
+    );
+    
+    if (reminderTime <= now) {
+        reminderTime.setDate(reminderTime.getDate() + 1);
+    }
+    
+    // Store reminder
+    userData.reminders.push({
+        time: reminderTime.getTime(), // Store as timestamp
+        task: task,
+        triggered: false
+    });
+    
+    return `⏰ I will remind you to "${task}" at ${reminderTime.toLocaleTimeString()}`;
+}
+
+// Check reminders function (should run periodically)
+function checkReminders() {
+    const now = new Date().getTime();
+    const dueReminders = userData.reminders.filter(r => 
+        !r.triggered && r.time <= now
+    );
+    
+    dueReminders.forEach(reminder => {
+        console.log(`🔔 REMINDER: ${reminder.task}`);
+        reminder.triggered = true;
+    });
+    
+    // Clean up old reminders (older than 24 hours)
+    userData.reminders = userData.reminders.filter(r => 
+        !r.triggered || (now - r.time < 86400000)
+    );
+    
+    return dueReminders.length > 0 ? 
+        dueReminders.map(r => `🔔 ${r.task}`).join('\n') : 
+        "No reminders due";
+}
+
+// Run this every minute (60,000ms)
+setInterval(checkReminders, 60000);
+    
+        function tellJoke() {
+            const jokes = [
+                "Why don't scientists trust atoms? Because they make up everything!",
+                "Did you hear about the mathematician who's afraid of negative numbers? He'll stop at nothing to avoid them!",
+                "Why don't skeletons fight each other? They don't have the guts!",
+                "I'm reading a book about anti-gravity. It's impossible to put down!",
+                "Did you hear about the claustrophobic astronaut? He just needed a little space."
+            ];
+            return jokes[Math.floor(Math.random() * jokes.length)];
+        }
+
+        function giveQuote() {
+            const quotes = [
+                "The only way to do great work is to love what you do. - Steve Jobs",
+                "Innovation distinguishes between a leader and a follower. - Steve Jobs",
+                "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
+                "Stay hungry, stay foolish. - Steve Jobs",
+                "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela"
+            ];
+            return quotes[Math.floor(Math.random() * quotes.length)];
+        }
+
+        function listAllFeatures() {
+            const features = [
+                "🔹 Voting Eligibility - Check if you're old enough to vote",
+                "🔹 Attendance Calculator - Calculate your class attendance percentage",
+                "🔹 Math Calculations - Solve math problems (+, -, *, /, ^)",
+                "🔹 Time/Date - Show current time or date",
+                "🔹 Unit Conversion - Convert between units (length, weight, temp)",
+                "🔹 Password Generator - Create secure passwords",
+                "🔹 Todo List - Add, view, and complete tasks",
+                "🔹 Weather Lookup - Get weather info for major cities",
+                "🔹 Currency Conversion - Convert between currencies",
+                "🔹 Age Calculator - Determine age from birth year/date",
+                "🔹 Reminders - Set timed reminders",
+                "🔹 Jokes - Tell random jokes",
+                "🔹 Quotes - Share inspirational quotes",
+                "\nTry commands like:\n" +
+                "'convert 5 feet to cm'\n" +
+                "'generate password'\n" +
+                "'add buy milk to todo'\n" +
+                "'what's the weather in Paris?'\n" +
+                "'tell me a joke'"
+            ];
+            
+            return responses.featuresList.replace("{features}", features.join("\n"));
+        }
+
+        function randomResponse(options) {
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        setInterval(() => {
+            const now = new Date();
+            for (let i = userData.reminders.length - 1; i >= 0; i--) {
+                if (now >= userData.reminders[i].time) {
+                    addMessage(`🔔 Reminder: ${userData.reminders[i].task}`, false);
+                    userData.reminders.splice(i, 1);
+                }
+            }
+        }, 60000);
+    </script>
+</body>
+</html>
