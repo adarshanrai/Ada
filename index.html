@@ -19,7 +19,7 @@
             --panel-bg-color: #ffe5ec;
         }
 
-        /* Dark mode */
+        
         [data-theme="dark"] {
             --primary-color: #4a2c6d;
             --secondary-color: #7e57c2;
@@ -418,7 +418,7 @@
             font-size: 1.2em;
         }
 
-        /* Scrollbar styling */
+    
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -448,7 +448,7 @@
     </div>
 
     <div class="chat-container" id="chatContainer">
-        <!-- Messages will appear here -->
+        
     </div>
 
     <div class="typing-indicator" id="typingIndicator">
@@ -484,7 +484,7 @@
         const currentTheme = localStorage.getItem('theme') || 
                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-        // Apply the saved theme
+       
         document.documentElement.setAttribute('data-theme', currentTheme);
 
         themeToggle.addEventListener('click', () => {
@@ -494,7 +494,6 @@
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             
-            // Add a quick animation
             themeToggle.style.transform = 'scale(0.9)';
             setTimeout(() => {
                 themeToggle.style.transform = 'scale(1)';
@@ -502,16 +501,16 @@
 
             function updateThemeIcon(theme) {
     if (theme === 'light-theme') {
-        themeIcon.src = "image/image/0e1959a4506ba8a95236475e7f7a547e.jpg"; // Path to your sun icon
+        themeIcon.src = "image/image/0e1959a4506ba8a95236475e7f7a547e.jpg"; 
         themeIcon.alt = "Light Mode";
     } else {
-        themeIcon.src = "image/image/984114ef32b30662c99df033eac71123.jpg"; // Path to your moon icon
+        themeIcon.src = "image/image/984114ef32b30662c99df033eac71123.jpg";
         themeIcon.alt = "Dark Mode";
     }
 }
         });
 
-        // Your existing JavaScript code (all the functions) remains exactly the same
+      
         const responses = {
             greetings: ["Hello there! 👋", "Hi! How can I assist you today?", "Hey! What can I do for you?"],
             farewells: ["Goodbye! Have a wonderful day!", "See you later! 👋", "Bye! Come chat again soon!"],
@@ -530,7 +529,7 @@
             reminders: []
         };
 
-        // DOM elements
+      
         const chatContainer = document.getElementById('chatContainer');
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
@@ -549,7 +548,6 @@
             }, 1000);
         });
 
-        // Event listeners
         sendButton.addEventListener('click', processInput);
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -635,22 +633,21 @@
                 return setReminder(input);
             }
 
-            // Help/Features
+            
             if (/help|what can you do|features|capabilities|assistance|support/i.test(lowerInput)) {
                 return randomResponse(responses.features);
             }
 
-            // Greetings
+           
             if (/^(hi|hello|hey|greetings|sup|what's up)\b/i.test(lowerInput)) {
                 return randomResponse(responses.greetings);
             }
 
-            // Farewells
             if (/^(bye|goodbye|see ya|see you|later|cya|farewell)\b/i.test(lowerInput)) {
                 return randomResponse(responses.farewells);
             }
 
-            // Thanks
+        
             if (/^(thanks|thank you|thx|appreciate|grateful)\b/i.test(lowerInput)) {
                 return randomResponse(responses.thanks);
             }
@@ -674,13 +671,13 @@
                 return calculateAttendance(input);
             } 
 
-            // Math Calculations
+           
             if (/(calculate|compute|solve|math|equation|formula|add|subtract|multiply|divide)/i.test(lowerInput) && 
                 /[\d\s+\-*\/^%.()]+/i.test(lowerInput)) {
                 return doMathCalculation(input);
             }
 
-            // Time/Date
+           
             if (/what('?s| is) the (time|current time|clock|hour|time|Time)/i.test(lowerInput) || 
                 /time now|current time|what time is it/i.test(lowerInput)) {
                 return `The current time is: ${new Date().toLocaleTimeString()}`;
@@ -689,13 +686,13 @@
                 return `Today's date is: ${new Date().toLocaleDateString()}`;
             }
 
-            // Password Generation
+          
             if (/(generate me a password|create|make|get).*(password|passcode|key|secret code)/i.test(lowerInput) || 
                 /password|secure code|random string/i.test(lowerInput)) {
                 return generatePassword();
             }
 
-            // Todo List
+          
             if (/(add|create|new|insert|include).*(todo|task|item|reminder|note)/i.test(lowerInput) || 
                 /todo list|task list|things to do|reminders/i.test(lowerInput)) {
                 return handleTodos(input);
@@ -712,7 +709,7 @@
                 return simulateCurrencyConversion(input);
             }
 
-            // Reminders
+            
            
 
             // Jokes
@@ -721,7 +718,7 @@
                 return tellJoke();
             }
 
-            // Quotes
+            
             if (/(give|tell|inspire|motivate|share).*(quote|saying|proverb|wisdom)/i.test(lowerInput) || 
                 /motivate me|inspiration|wise words/i.test(lowerInput)) {
                 return giveQuote();
@@ -956,7 +953,6 @@
                    "- '¥5000 to euros'";
         }
         
-       // Initialize storage if not exists
 if (!window.userData) {
     window.userData = {
         reminders: [],
@@ -964,26 +960,24 @@ if (!window.userData) {
     };
 }
 
-// Main reminder function
 function setReminder(input) {
-    // Normalize input
+    
     const cleanInput = input.toLowerCase().trim();
     
-    // Parse input
     const match = cleanInput.match(/remind me to (.+?) at (\d{1,2}):(\d{2})(am|pm)/);
     if (!match) return "Please use: 'remind me to [task] at [time]am/pm'";
     
-    // Extract components
+ 
     const task = match[1].trim();
     let hours = parseInt(match[2]);
     const minutes = parseInt(match[3]);
     const period = match[4];
     
-    // Convert to 24-hour time
+    
     if (period === 'pm' && hours < 12) hours += 12;
     if (period === 'am' && hours === 12) hours = 0;
     
-    // Create reminder time (today or tomorrow)
+    
     const now = new Date();
     const reminderTime = new Date(
         now.getFullYear(),
@@ -997,9 +991,9 @@ function setReminder(input) {
         reminderTime.setDate(reminderTime.getDate() + 1);
     }
     
-    // Store reminder
+  
     userData.reminders.push({
-        time: reminderTime.getTime(), // Store as timestamp
+        time: reminderTime.getTime(), 
         task: task,
         triggered: false
     });
@@ -1007,7 +1001,6 @@ function setReminder(input) {
     return `⏰ I will remind you to "${task}" at ${reminderTime.toLocaleTimeString()}`;
 }
 
-// Check reminders function (should run periodically)
 function checkReminders() {
     const now = new Date().getTime();
     const dueReminders = userData.reminders.filter(r => 
@@ -1029,7 +1022,7 @@ function checkReminders() {
         "No reminders due";
 }
 
-// Run this every minute (60,000ms)
+
 setInterval(checkReminders, 60000);
     
         function tellJoke() {
